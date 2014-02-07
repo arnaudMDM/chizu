@@ -4,8 +4,8 @@
 #include "Draw.h"
 
 // define the screen resolution
-#define SCREEN_WIDTH  1366
-#define SCREEN_HEIGHT 720
+#define SCREEN_WIDTH  800
+#define SCREEN_HEIGHT 600
 
 // the WindowProc function prototype
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
