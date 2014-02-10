@@ -182,8 +182,10 @@ void InitPipeline()
 {
 	// compile the shaders
 	ID3D10Blob *VS, *PS;
-	D3DCompileFromFile(L"shaders.hlsl", 0, 0, "VShader", "vs_5_0", 0, 0, &VS, 0);
-	D3DCompileFromFile(L"shaders.hlsl", 0, 0, "PShader", "ps_5_0", 0, 0, &PS, 0);
+	D3DReadFileToBlob(L"VShader.cso", &VS);
+	D3DReadFileToBlob(L"PShader.cso", &PS);
+	//D3DCompileFromFile(L"shaders.hlsl", 0, 0, "VShader", "vs_4_0", 0, 0, &VS, 0);
+	//D3DCompileFromFile(L"shaders.hlsl", 0, 0, "PShader", "ps_4_0", 0, 0, &PS, 0);
 
 	// create the shader objects
 	dev->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &pVS);
