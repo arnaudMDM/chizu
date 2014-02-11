@@ -10,12 +10,11 @@
 // the WindowProc function prototype
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
+DWORD nbElts = 0;
+BOOL initialized = FALSE;
+
 // the entry point for any Windows program
-int WINAPI WinMain(HINSTANCE hInstance,
-	HINSTANCE hPrevInstance,
-	LPSTR lpCmdLine,
-	int nCmdShow)
-{
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow){
 	HWND hWnd;
 	WNDCLASSEX wc;
 
@@ -35,7 +34,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 	hWnd = CreateWindowEx(NULL,
 		"WindowClass",
-		"Our First Direct3D Program",
+		"Chizu",
 		WS_OVERLAPPEDWINDOW,
 		300,
 		300,
@@ -49,33 +48,31 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	ShowWindow(hWnd, nCmdShow);
 
 	//Read the file and find the minimum/maximum for x and y; return a list of struct Coord(lat, long)
-	DWORD nbElts = 0;
 	Coord* pCoord = NULL;
 	Limit limit;
 	nbElts = readFile("coord.txt", &pCoord, &limit);
-	char strNbElts[200];
+	CHAR strNbElts[200];
 	//sprintf_s(strNbElts, "heheeeeeeeeeeeeee %f\n", limit.xMaximum);
 	//OutputDebugString(strNbElts);
 
 	// set up and initialize Direct3D
 	InitD3D(hWnd, SCREEN_WIDTH, SCREEN_HEIGHT, &limit, nbElts, pCoord);
+	initialized = TRUE;
+	RenderFrame(SCREEN_WIDTH, SCREEN_HEIGHT, nbElts);
 
 	// enter the main loop:
 
 	MSG msg;
 
-	while (TRUE)
-	{
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
+	while (TRUE){
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)){
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 
-			if (msg.message == WM_QUIT)
+			if (msg.message == WM_QUIT){
 				break;
+			}
 		}
-
-		RenderFrame(SCREEN_WIDTH, SCREEN_HEIGHT, nbElts);
 	}
 
 	// clean up DirectX and COM
@@ -85,16 +82,17 @@ int WINAPI WinMain(HINSTANCE hInstance,
 }
 
 // this is the main message handler for the program
-LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch (message)
-	{
-	case WM_DESTROY:
-	{
-						PostQuitMessage(0);
-						return 0;
-	} break;
+LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam){
+	switch (message){
+		case WM_DESTROY:{
+							PostQuitMessage(0);
+							return 0;
+		} break;
+		case WM_WINDOWPOSCHANGED:{
+							if (initialized)
+								RenderFrame(SCREEN_WIDTH, SCREEN_HEIGHT, nbElts);
+							return 0;
+		}break;
 	}
-
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }

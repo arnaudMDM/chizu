@@ -40,11 +40,10 @@ struct CBUFFER{ FLOAT xCoef, xAff, yCoef, yAff; };
 // function prototypes
 void InitGraphics(DWORD nbElts, Coord * pCoord);    // creates the shape to render
 void InitPipeline(void);    // loads and prepares the shaders
-void InitCBuffer(int screenWidth, int screenHeight,Limit * pLimit);
+void InitCBuffer(DWORD screenWidth, DWORD screenHeight,Limit * pLimit);
 
 // this function initializes and prepares Direct3D for use
-void InitD3D(HWND hWnd, int screenWidth, int screenHeight, Limit * pLimit, DWORD nbElts, Coord * pCoord)
-{
+void InitD3D(HWND hWnd, DWORD screenWidth, DWORD screenHeight, Limit * pLimit, DWORD nbElts, Coord * pCoord){
 	// create a struct to hold information about the swap chain
 	DXGI_SWAP_CHAIN_DESC scd;
 
@@ -108,8 +107,7 @@ void InitD3D(HWND hWnd, int screenWidth, int screenHeight, Limit * pLimit, DWORD
 
 
 // this is the function used to render a single frame
-void RenderFrame(int screenWidth, int screenHeight, DWORD nbElts)
-{
+void RenderFrame(DWORD screenWidth, DWORD screenHeight, DWORD nbElts){
 	// clear the back buffer to a deep blue
 	devcon->ClearRenderTargetView(backbuffer, Color(1.0f, 1.0f, 1.f, 0.0f).getArray());
 
@@ -130,8 +128,7 @@ void RenderFrame(int screenWidth, int screenHeight, DWORD nbElts)
 
 
 // this is the function that cleans up Direct3D and COM
-void CleanD3D(void)
-{
+void CleanD3D(void){
 	swapchain->SetFullscreenState(FALSE, NULL);    // switch to windowed mode
 
 	// close and release all existing COM objects
@@ -151,8 +148,7 @@ void CleanD3D(void)
 void InitGraphics(DWORD nbElts, Coord * pCoord)
 {
 	// create vertices to represent the corners of the cube
-	VERTEX OurVertices[] =
-	{
+	VERTEX OurVertices[] ={
 		{ 0.0f, 0.5f},
 		{ 0.45f, -0.5f},
 		{ -0.45f, -0.5f}
@@ -178,8 +174,7 @@ void InitGraphics(DWORD nbElts, Coord * pCoord)
 
 
 // this function loads and prepares the shaders
-void InitPipeline()
-{
+void InitPipeline(){
 	// compile the shaders
 	ID3D10Blob *VS, *PS;
 	D3DReadFileToBlob(L"VShader.cso", &VS);
@@ -196,8 +191,7 @@ void InitPipeline()
 	devcon->PSSetShader(pPS, 0, 0);
 
 	// create the input element object
-	D3D11_INPUT_ELEMENT_DESC ied[] =
-	{
+	D3D11_INPUT_ELEMENT_DESC ied[] ={
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
@@ -217,13 +211,13 @@ void InitPipeline()
 	devcon->VSSetConstantBuffers(0, 1, &pCBuffer);
 }
 
-void InitCBuffer(int screenWidth, int screenHeight, Limit * pLimit){
+void InitCBuffer(DWORD screenWidth, DWORD screenHeight, Limit * pLimit){
 	CBUFFER cBuffer;
-	float xInter = pLimit->xMaximum - pLimit->xMinimum;
-	float yInter = pLimit->yMaximum - pLimit->yMinimum;
+	FLOAT xInter = pLimit->xMaximum - pLimit->xMinimum;
+	FLOAT yInter = pLimit->yMaximum - pLimit->yMinimum;
 
-	float xCoef = 0.0f;
-	float yCoef = 0.0f;
+	FLOAT xCoef = 0.0f;
+	FLOAT yCoef = 0.0f;
 
 	if ((screenWidth / xInter) > (screenHeight / yInter)){
 		yCoef = 2.0f / yInter;
@@ -234,8 +228,8 @@ void InitCBuffer(int screenWidth, int screenHeight, Limit * pLimit){
 		yCoef = xCoef * screenWidth / screenHeight;
 	}
 
-	float xAff = -1.0f - (xCoef * pLimit->xMinimum);
-	float yAff = -1.0f - (yCoef * pLimit->yMinimum);
+	FLOAT xAff = -1.0f - (xCoef * pLimit->xMinimum);
+	FLOAT yAff = -1.0f - (yCoef * pLimit->yMinimum);
 
 	cBuffer.xCoef = xCoef;
 	cBuffer.yCoef = yCoef;

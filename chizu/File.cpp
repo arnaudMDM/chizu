@@ -6,30 +6,30 @@
 
 #define NB_COORD_ELTS 40000
 
-int readFile(LPCTSTR name, Coord ** ppCoord, Limit * pLimit){
+DWORD readFile(LPCTSTR name, Coord ** ppCoord, Limit * pLimit){
 	HANDLE hFile = CreateFile(name, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
 	*ppCoord = (Coord *) malloc(sizeof(Coord)* NB_COORD_ELTS);
-	int nbCoordElts = 0;
+	DWORD nbCoordElts = 0;
 
-	char   buffer[NB_COORD_ELTS * 22] = { 0 };
+	CHAR   buffer[NB_COORD_ELTS * 22] = { 0 };
 	DWORD nbBytesRead = 0;
 	ReadFile(hFile, buffer, NB_COORD_ELTS * 22, &nbBytesRead, NULL);
-	char str[256] = { 0 };
+	CHAR str[256] = { 0 };
 	//sprintf_s(str, "he %i", nbBytesRead);
-	char * pch;
-	char *next_token = NULL;
+	CHAR * pch;
+	CHAR *next_token = NULL;
 	pch = strtok_s(buffer, ",\n", &next_token);
-	while (pch != NULL)
-	{
-		float lat = strtof(pch, NULL);
+
+	while (pch != NULL){
+		FLOAT lat = strtof(pch, NULL);
 		if (pLimit->yMinimum > lat)
 			pLimit->yMinimum = lat;
 		else if (pLimit->yMaximum < lat)
 			pLimit->yMaximum = lat;
 		//OutputDebugString(str);
 		pch = strtok_s(NULL, ",\r\n", &next_token);
-		float lon = strtof(pch, NULL);
+		FLOAT lon = strtof(pch, NULL);
 		if (pLimit->xMinimum > lon)
 			pLimit->xMinimum = lon;
 		else if (pLimit->xMaximum < lon)
