@@ -23,24 +23,13 @@ ID3D11PixelShader *pPS;                // the pointer to the pixel shader
 ID3D11Buffer *pVBuffer;                // the pointer to the vertex buffer
 ID3D11Buffer *pCBuffer;                // the pointer to the constant buffer
 
-struct Color{
-	FLOAT r, g, b, a;
-	Color(FLOAT _r, FLOAT _g, FLOAT _b, FLOAT _a) :r(_r), g(_g), b(_b), a(_a){};
-	Color(){};
-	FLOAT* getArray(){
-		FLOAT res[4] = { r, g, b, a };
-		return res;
-	}
-};
-
 // various buffer structs
-struct VERTEX{ FLOAT X, Y, Z, W; Color Normal;};
+struct VERTEX{ FLOAT X, Y;};
 struct CBUFFER{ FLOAT xCoef, xAff, yCoef, yAff; };
 
 // function prototypes
 void InitGraphics(DWORD nbElts, Coord * pCoord);    // creates the shape to render
 void InitPipeline(void);    // loads and prepares the shaders
-void InitCBuffer(DWORD screenWidth, DWORD screenHeight,Limit * pLimit);
 
 // this function initializes and prepares Direct3D for use
 void InitD3D(HWND hWnd, DWORD screenWidth, DWORD screenHeight, Limit * pLimit, DWORD nbElts, Coord * pCoord){
@@ -102,14 +91,15 @@ void InitD3D(HWND hWnd, DWORD screenWidth, DWORD screenHeight, Limit * pLimit, D
 
 	InitPipeline();
 	InitGraphics(nbElts, pCoord);
-	InitCBuffer(screenWidth, screenHeight, pLimit);
+	UpdateCBuffer(screenWidth, screenHeight, pLimit);
 }
 
 
 // this is the function used to render a single frame
 void RenderFrame(DWORD screenWidth, DWORD screenHeight, DWORD nbElts){
 	// clear the back buffer to a deep blue
-	devcon->ClearRenderTargetView(backbuffer, Color(1.0f, 1.0f, 1.f, 0.0f).getArray());
+	FLOAT color[] = { 1.0f, 1.0f, 1.f, 0.0f };
+	devcon->ClearRenderTargetView(backbuffer, color);
 
 	// select which vertex buffer to display
 	UINT stride = sizeof(VERTEX);
@@ -147,13 +137,6 @@ void CleanD3D(void){
 // this is the function that creates the shape to render
 void InitGraphics(DWORD nbElts, Coord * pCoord)
 {
-	// create vertices to represent the corners of the cube
-	VERTEX OurVertices[] ={
-		{ 0.0f, 0.5f},
-		{ 0.45f, -0.5f},
-		{ -0.45f, -0.5f}
-	};
-
 	// create the vertex buffer
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
@@ -211,7 +194,7 @@ void InitPipeline(){
 	devcon->VSSetConstantBuffers(0, 1, &pCBuffer);
 }
 
-void InitCBuffer(DWORD screenWidth, DWORD screenHeight, Limit * pLimit){
+void UpdateCBuffer(DWORD screenWidth, DWORD screenHeight, Limit * pLimit){
 	CBUFFER cBuffer;
 	FLOAT xInter = pLimit->xMaximum - pLimit->xMinimum;
 	FLOAT yInter = pLimit->yMaximum - pLimit->yMinimum;

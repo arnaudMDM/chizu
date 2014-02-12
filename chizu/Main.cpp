@@ -4,13 +4,14 @@
 #include "Draw.h"
 
 // define the screen resolution
-#define SCREEN_WIDTH  800
-#define SCREEN_HEIGHT 600
+#define SCREEN_WIDTH  2466
+#define SCREEN_HEIGHT 1020
 
 // the WindowProc function prototype
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 DWORD nbElts = 0;
+Limit limit;
 BOOL initialized = FALSE;
 
 // the entry point for any Windows program
@@ -49,8 +50,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	//Read the file and find the minimum/maximum for x and y; return a list of struct Coord(lat, long)
 	Coord* pCoord = NULL;
-	Limit limit;
-	nbElts = readFile("coord.txt", &pCoord, &limit);
+	nbElts = readFile("world_coord.txt", &pCoord, &limit);
 	CHAR strNbElts[200];
 	//sprintf_s(strNbElts, "heheeeeeeeeeeeeee %f\n", limit.xMaximum);
 	//OutputDebugString(strNbElts);
@@ -77,6 +77,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	// clean up DirectX and COM
 	CleanD3D();
+	free(pCoord);
 
 	return msg.wParam;
 }
@@ -89,6 +90,12 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 							return 0;
 		} break;
 		case WM_WINDOWPOSCHANGED:{
+							CHAR str[256];
+							RECT rect;
+							GetClientRect(hWnd, &rect);
+							UpdateCBuffer(rect.right - rect.left, rect.bottom - rect.top, &limit);
+							//sprintf_s(str, "%i\n", rect.bottom - rect.top);
+							//OutputDebugString(str);
 							if (initialized)
 								RenderFrame(SCREEN_WIDTH, SCREEN_HEIGHT, nbElts);
 							return 0;
