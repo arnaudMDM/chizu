@@ -1,3 +1,4 @@
+# Chizu
 Chizu is a small project where I played with the possibilies of directx and shaders.
 
 Chizu is rendering a 2D map based on coordinates of cities. The number of coordinates can be huge.
